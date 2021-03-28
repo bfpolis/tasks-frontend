@@ -11,9 +11,19 @@ public class Todo {
 
 	private Long id;
 	private String task;
-	@DateTimeFormat(pattern="dd/MM/yyyy")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate dueDate;
-	
+
+	public Todo() {
+
+	}
+
+	public Todo(Long id, String task, LocalDate dueDate) {
+		this.id = id;
+		this.task = task;
+		this.dueDate = dueDate;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -29,7 +39,7 @@ public class Todo {
 	public void setTask(String task) {
 		this.task = task;
 	}
-	
+
 	public LocalDate getDueDate() {
 		return dueDate;
 	}
@@ -42,6 +52,5 @@ public class Todo {
 	public String toString() {
 		return "Todo [id=" + id + ", task=" + task + ", dueDate=" + dueDate + "]";
 	}
-	
-	
+
 }

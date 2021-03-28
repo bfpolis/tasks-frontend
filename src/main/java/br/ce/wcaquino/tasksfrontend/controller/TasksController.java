@@ -1,5 +1,7 @@
 package br.ce.wcaquino.tasksfrontend.controller;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,28 +18,28 @@ import br.ce.wcaquino.tasksfrontend.model.Todo;
 
 @Controller
 public class TasksController {
-	
+
 	@Value("${backend.host}")
 	private String BACKEND_HOST;
 
 	@Value("${backend.port}")
 	private String BACKEND_PORT;
-	
+
 	@Value("${app.version}")
 	private String VERSION;
-	
+
 	public String getBackendURL() {
 		return "http://" + BACKEND_HOST + ":" + BACKEND_PORT;
 	}
-	
+
 	@GetMapping("")
 	public String index(Model model) {
 		model.addAttribute("todos", getTodos());
-		if(VERSION.startsWith("build"))
+		if (VERSION.startsWith("build"))
 			model.addAttribute("version", VERSION);
 		return "index";
 	}
-	
+
 	@GetMapping("add")
 	public String add(Model model) {
 		model.addAttribute("todo", new Todo());
@@ -48,36 +50,35 @@ public class TasksController {
 	public String save(Todo todo, Model model) {
 		try {
 			RestTemplate restTemplate = new RestTemplate();
-			restTemplate.postForObject(
-					getBackendURL() + "/tasks-backend/todo", todo, Object.class);			
+			restTemplate.postForObject(getBackendURL() + "/todo", todo, Object.class);
 			model.addAttribute("sucess", "Sucess!");
 			return "index";
-		} catch(Exception e) {
+		} catch (Exception e) {
 			Pattern compile = Pattern.compile("message\":\"(.*)\",");
 			Matcher m = compile.matcher(e.getMessage());
 			m.find();
 			model.addAttribute("error", m.group(1));
 			model.addAttribute("todo", todo);
-			return "add"; 
+			return "add";
 		} finally {
 			model.addAttribute("todos", getTodos());
 		}
 	}
-	
+
 	@GetMapping("delete/{id}")
 	public String delete(@PathVariable Long id, Model model) {
 		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.delete(getBackendURL() + "/tasks-backend/todo/" + id);			
+		restTemplate.delete(getBackendURL() + "/todo/" + id);
 		model.addAttribute("success", "Success!");
 		model.addAttribute("todos", getTodos());
 		return "index";
 	}
 
-	
-	@SuppressWarnings("unchecked")
 	private List<Todo> getTodos() {
-		RestTemplate restTemplate = new RestTemplate();
-		return restTemplate.getForObject(
-				getBackendURL() + "/tasks-backend/todo", List.class);
+		List<Todo> lista = new ArrayList<Todo>();
+		lista.add(new Todo(1l, "task", LocalDate.now()));
+		return lista;
+		// RestTemplate restTemplate = new RestTemplate();
+		// return restTemplate.getForObject(getBackendURL() + "/todo", List.class);
 	}
 }
